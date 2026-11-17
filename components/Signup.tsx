@@ -1,0 +1,7 @@
+'use client';
+import {useState,type FormEvent} from 'react';
+export default function Signup({locale}:{locale:'en'|'es'}){
+ const [email,setEmail]=useState('');const [status,setStatus]=useState<'idle'|'loading'|'success'|'error'>('idle');const es=locale==='es';
+ async function submit(e:FormEvent){e.preventDefault();setStatus('loading');try{const r=await fetch('/api/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,locale,source:new URLSearchParams(window.location.search).get('utm_source')||'direct'})});if(!r.ok)throw Error('signup');setStatus('success');setEmail('');}catch{setStatus('error');}}
+ return <form className="signup" onSubmit={submit}><label htmlFor="email">{es?'Tu correo electrónico':'Your email address'}</label><div className="signupRow"><input id="email" type="email" required maxLength={254} autoComplete="email" placeholder="you@example.com" value={email} onChange={e=>setEmail(e.target.value)}/><button type="submit" disabled={status==='loading'}>{status==='loading'?'…':es?'Quiero participar':'Join the challenge'}</button></div><p className="fine">{es?'Al registrarte aceptas recibir correos sobre Devos. Puedes darte de baja cuando quieras.':'By signing up you agree to receive Devos emails. Unsubscribe anytime.'}</p>{status==='success'&&<p role="status" className="success">{es?'¡Estás en la lista!':'You’re on the list!'}</p>}{status==='error'&&<p role="alert" className="error">{es?'Ocurrió un error. Intenta nuevamente.':'Something went wrong. Try again.'}</p>}</form>;
+}
